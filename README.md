@@ -31,6 +31,17 @@ The API is now available on your host at `http://localhost:3000`.
 Head to the [documentation](https://thecodingmachine.github.io/gotenberg)
 to learn how to interact with it!
 
+## MacOS Build
+```bash
+git clone https://github.com/soopsio/gotenberg $(go env GOPATH)/src/github.com/thecodingmachine/gotenberg
+export PATH=/Applications/LibreOffice.app/Contents/Resources:/Applications/LibreOffice.app/Contents/MacOS:$PATH
+export GO111MODULE=on        
+go get -v ./cmd/gotenberg
+
+# start service
+gotenberg
+```
+
 ## Badges
 
 [![Docker image layers](https://images.microbadger.com/badges/image/thecodingmachine/gotenberg:3.svg)](https://microbadger.com/images/thecodingmachine/gotenberg:3)
