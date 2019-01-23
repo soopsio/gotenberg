@@ -2,7 +2,9 @@ package pm2
 
 import (
 	"fmt"
+	"os"
 	"os/exec"
+	"strings"
 
 	"github.com/thecodingmachine/gotenberg/internal/pkg/notify"
 )
@@ -31,6 +33,7 @@ func launch(p Process) error {
 	if err := run(p, "start"); err != nil {
 		return err
 	}
+	fmt.Println(p.getFullname())
 	p.warmup()
 	if !p.isViable() {
 		attempts := 0
@@ -55,17 +58,24 @@ func run(p Process, cmdName string) error {
 		cmdName,
 		p.getName(),
 	}
+
 	if cmdName == "start" {
 		cmdArgs = append(cmdArgs, "--interpreter none", "--")
 		cmdArgs = append(cmdArgs, p.getArgs()...)
 	}
 	cmd := exec.Command(
-		"pm2",
-		cmdArgs...,
+		"/bin/sh", "-c",
+		"pm2 " + strings.Join(cmdArgs, " "),
 	)
+	cmd.Env = os.Environ()
+	fmt.Println(cmd.Args)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+
 	if err := cmd.Start(); err != nil {
 		return fmt.Errorf("%s %s with PM2: %v", cmdName, p.getFullname(), err)
 	}
+
 	notify.Println(fmt.Sprintf("%s %s with PM2", p.getFullname(), humanNames[cmdName]))
 	return nil
 }

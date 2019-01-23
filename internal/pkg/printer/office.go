@@ -8,6 +8,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strconv"
+	"strings"
 	"sync"
 
 	"github.com/thecodingmachine/gotenberg/internal/pkg/rand"
@@ -52,9 +53,11 @@ func (o *Office) Print(destination string) error {
 		cmdArgs = append(cmdArgs, "--output", tmpDest, fpath)
 		cmd := exec.CommandContext(
 			o.Context,
-			"unoconv",
-			cmdArgs...,
+			"bash",
+			"-c",
+			"python `which unoconv` "+strings.Join(cmdArgs," "),
 		)
+		cmd.Env = os.Environ()
 		_, err = cmd.Output()
 		if o.Context.Err() == context.DeadlineExceeded {
 			return errors.New("unoconv: command timed out")
